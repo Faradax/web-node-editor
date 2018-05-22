@@ -10,20 +10,22 @@
         </div>
         <div class="io">
             <div class="inputs">
-                    <div class="i" v-for="input in graphNodeData.inputs" :key="input.id">
-                        <span class="input-mark"></span> {{ input.label }}
-                    </div>
+                    <input-socket v-for="input in graphNodeData.inputs" :key="input.id" :socket-name="input.label">
+                    </input-socket>
             </div>
             <div class="outputs">
-                    <div class="o" v-for="output in graphNodeData.outputs" :key="output.id">
-                        {{ output.label }} <span class="input-mark"></span>
-                    </div>
+                    <output-socket v-for="output in graphNodeData.outputs" :key="output.id" :socket-name="output.label">
+                    </output-socket>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+
+import InputSocket from "./InputSocket.vue";
+import OutputSocket from "./OutputSocket.vue";
+
 export default {
   name: "GraphNode",
   data() {
@@ -81,6 +83,10 @@ export default {
       this.pos.left = this.dragState.posX + "px";
       this.pos.top = this.dragState.posY + "px";
     }
+  },
+  components: {
+   InputSocket,
+   OutputSocket
   }
 };
 </script>
