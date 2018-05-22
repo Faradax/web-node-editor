@@ -1,7 +1,8 @@
 <template>
     <div 
         class="graph-node"
-        v-bind:style="pos">
+        v-bind:style="pos"
+        v-bind:class="{dragged: dragState.beingDragged}">
         <div 
             class="name"         
             @mousedown="startMove">
@@ -28,6 +29,7 @@ export default {
   data() {
     return {
       dragState: {
+        beingDragged: false,
         startX: 0,
         startY: 0,
         posX: 0,
@@ -65,8 +67,10 @@ export default {
       this.dragState.startX = event.clientX - this.dragState.posX;
       this.dragState.startY = event.clientY - this.dragState.posY;
       document.onmousemove = this.doMove;
+      this.dragState.beingDragged = true;
       document.onmouseup = () => {
         document.onmousemove = null;
+        this.dragState.beingDragged = false;
       };
     },
 
@@ -83,6 +87,7 @@ export default {
 
 <style>
 .graph-node {
+  font-size: 1em;
   position: absolute;
   background-color: #454565;
   color: white;
@@ -90,6 +95,12 @@ export default {
   border: 1px solid #404050;
   border-radius: 4px;
   font-family: "Source Sans Pro", "lato", sans-serif;
+  transition: transform 100ms, box-shadow 100ms;
+}
+
+.graph-node.dragged {
+  transform: rotateZ(2deg);
+  box-shadow: 1px 1px 1px 1px grey;
 }
 
 .name {
@@ -97,7 +108,7 @@ export default {
   cursor: move;
   user-select: none;
   font-variant-caps: small-caps;
-  font-size: 1.1rem;
+  font-size: 1.2em;
 }
 
 .io {
@@ -124,11 +135,11 @@ export default {
 
 .input-mark {
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 0.8em;
+  height: 0.8em;
 
   background-color: lightgray;
-  border: 1px solid black;
+  border: 0.08em solid black;
   border-radius: 50%;
   box-sizing: border-box;
 }
