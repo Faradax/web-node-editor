@@ -4,8 +4,6 @@
     <graph-node></graph-node>
     <graph-node></graph-node>
     <graph-node></graph-node>
-    <connection>
-    </connection>
   </div>
 </template>
 
