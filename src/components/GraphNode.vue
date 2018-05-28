@@ -25,11 +25,13 @@
 
 import InputSocket from "./InputSocket.vue";
 import OutputSocket from "./OutputSocket.vue";
+import eventBus from "../EventBus.js"
 
 export default {
   name: "GraphNode",
   data() {
     return {
+      socketRefs: [],
       dragState: {
         beingDragged: false,
         startX: 0,
@@ -82,6 +84,8 @@ export default {
       this.dragState.posY = event.clientY - this.dragState.startY;
       this.pos.left = this.dragState.posX + "px";
       this.pos.top = this.dragState.posY + "px";
+
+      eventBus.$emit("node-move");
     }
   },
   components: {

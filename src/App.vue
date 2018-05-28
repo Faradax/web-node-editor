@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <node-editor></node-editor>
     <graph-node></graph-node>
     <graph-node></graph-node>
     <graph-node></graph-node>
@@ -9,13 +10,13 @@
 
 <script>
 import GraphNode from './components/GraphNode.vue'
-import Connection from './components/Connection.vue'
+import NodeEditor from './components/NodeEditor.vue'
 
 export default {
   name: 'app',
   components: {
-    GraphNode,
-    Connection
+    NodeEditor,
+    GraphNode
   }
 }
 </script>

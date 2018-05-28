@@ -4,7 +4,6 @@
             {{ socketName }} 
             <span class="input-mark" style="position: relative" @mousedown="startDrag">
                 <div style="position: absolute" :style="tempConnectionStyle">
-                    <connection></connection>
                 </div>
             </span>
         </div>
@@ -12,7 +11,7 @@
 </template>
 
 <script>
-import Connection from "./Connection.vue";
+import eventBus from '../EventBus.js';
 
 export default {
   name: "OutputSocket",
@@ -29,8 +28,18 @@ export default {
   },
   methods: {
     startDrag() {
+
+      eventBus.$emit("connection", this);
+
       document.onmousemove = this.drawConnection;
       document.onmouseup = () => {
+        this.tempConnectionStyle = 
+        {
+          left: "0px",
+          top: "0px",
+          height: "0px",
+          width: "0px"
+        };
         document.onmousemove = null;
       };
     },
@@ -49,10 +58,18 @@ export default {
       let targetY = event.clientY;
       this.tempConnectionStyle.width = targetX - x + "px";
       this.tempConnectionStyle.height = targetY - y + "px";
+    },
+
+    clientPosition() {
+            const bounds = this.$el
+        .querySelector(".input-mark")
+        .getBoundingClientRect();
+      let x = bounds.x;
+      let y = bounds.y;
+      x += bounds.width / 2;
+      y += bounds.height / 2;
+      return {x: x, y: y};
     }
-  },
-  components: {
-    Connection
   }
 };
 </script>
