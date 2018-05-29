@@ -111,7 +111,6 @@ export default {
 }
 
 .graph-node.dragged {
-  transform: rotateZ(2deg);
   box-shadow: 1px 1px 1px 1px grey;
 }
 
