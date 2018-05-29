@@ -11,13 +11,17 @@
 </template>
 
 <script>
-import eventBus from '../EventBus.js';
+import eventBus from "../EventBus.js";
 
 export default {
   name: "OutputSocket",
   props: ["socketName"],
   data: function() {
     return {
+      anchor: {
+        x: 0,
+        y: 0
+      },
       tempConnectionStyle: {
         left: "0px",
         top: "0px",
@@ -28,13 +32,11 @@ export default {
   },
   methods: {
     startDrag() {
-
       eventBus.$emit("connection", this);
 
       document.onmousemove = this.drawConnection;
       document.onmouseup = () => {
-        this.tempConnectionStyle = 
-        {
+        this.tempConnectionStyle = {
           left: "0px",
           top: "0px",
           height: "0px",
@@ -52,8 +54,8 @@ export default {
       let y = bounds.y;
       x += bounds.width / 2;
       y += bounds.height / 2;
-      this.tempConnectionStyle.left = (bounds.width / 2) + "px"
-      this.tempConnectionStyle.top = (bounds.height / 2) + "px"
+      this.tempConnectionStyle.left = bounds.width / 2 + "px";
+      this.tempConnectionStyle.top = bounds.height / 2 + "px";
       let targetX = event.clientX;
       let targetY = event.clientY;
       this.tempConnectionStyle.width = targetX - x + "px";
@@ -61,14 +63,18 @@ export default {
     },
 
     clientPosition() {
-            const bounds = this.$el
+      const bounds = this.$el
         .querySelector(".input-mark")
         .getBoundingClientRect();
       let x = bounds.x;
       let y = bounds.y;
       x += bounds.width / 2;
       y += bounds.height / 2;
-      return {x: x, y: y};
+      return { x: x, y: y };
+    },
+    recalculateAnchor() {
+      this.anchor.x = this.clientPosition().x;
+      this.anchor.y = this.clientPosition().y;
     }
   }
 };
@@ -80,6 +86,6 @@ export default {
 }
 
 connection {
-    z-index: -2
+  z-index: -2;
 }
 </style>

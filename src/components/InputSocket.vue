@@ -9,6 +9,14 @@ import eventBus from "../EventBus.js";
 
 export default {
   name: "InputSocket",
+  data: function() {
+    return {
+      anchor: {
+        x: 0,
+        y: 0
+      }
+    };
+  },
   props: ["socketName"],
   methods: {
     mouseUp() {
@@ -24,6 +32,10 @@ export default {
       x += bounds.width / 2;
       y += bounds.height / 2;
       return { x: x, y: y };
+    },
+    recalculateAnchor() {
+      this.anchor.x = this.clientPosition().x;
+      this.anchor.y = this.clientPosition().y;
     }
   }
 };

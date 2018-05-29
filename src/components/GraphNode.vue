@@ -10,11 +10,11 @@
         </div>
         <div class="io">
             <div class="inputs">
-                    <input-socket v-for="input in graphNodeData.inputs" :key="input.id" :socket-name="input.label">
+                    <input-socket v-for="input in graphNodeData.inputs" :key="input.id" :socket-name="input.label" ref="sockets">
                     </input-socket>
             </div>
             <div class="outputs">
-                    <output-socket v-for="output in graphNodeData.outputs" :key="output.id" :socket-name="output.label">
+                    <output-socket v-for="output in graphNodeData.outputs" :key="output.id" :socket-name="output.label" ref="sockets">
                     </output-socket>
             </div>
         </div>
@@ -85,7 +85,9 @@ export default {
       this.pos.left = this.dragState.posX + "px";
       this.pos.top = this.dragState.posY + "px";
 
-      eventBus.$emit("node-move");
+      this.$refs.sockets.forEach(element => {
+        element.recalculateAnchor();
+      });
     }
   },
   components: {

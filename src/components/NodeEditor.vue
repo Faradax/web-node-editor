@@ -5,8 +5,8 @@
             <svg width="100%" height="100%"
                 preserveAspectRatio="none"
                 >
-                <path v-for="connection in connections" :key="connection.id"
-                    vector-effect="non-scaling-stroke" :d="calcPath(connection)"/>
+                <connection v-for="connection in connections" :key="connection.id"
+                    :start="connection.start.anchor" :end="connection.end.anchor"/>
             </svg>
         </div>
     </div>
@@ -14,6 +14,7 @@
 
 <script>
 import eventBus from "../EventBus.js";
+import Connection from "./Connection.vue";
 
 export default {
   data: function() {
@@ -26,12 +27,6 @@ export default {
   methods: {
     startConnection(outputSocket) {
       this.connectionStart = outputSocket;
-    },
-    calcPath(connection) {
-        const start = connection.start.clientPosition();
-        const end = connection.end.clientPosition();
-        const anchorX = start.x + ((end.x - start.x) / 2);
-        return `M ${start.x},${start.y} C ${anchorX},${start.y} ${anchorX},${end.y} ${end.x},${end.y}`
     },
     finishConnection(inputSocket) {
       if (this.connectionStart) {
@@ -57,7 +52,9 @@ export default {
   mounted() {
     eventBus.$on("connection", this.startConnection);
     eventBus.$on("connection-finish", this.finishConnection);
-    eventBus.$on("node-move", function() { this.$forceUpdate(); }.bind(this));
+  },
+  components: {
+    Connection
   }
 };
 </script>
