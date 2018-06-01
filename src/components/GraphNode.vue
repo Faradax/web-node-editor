@@ -6,15 +6,15 @@
         <div 
             class="name"         
             @mousedown="startMove">
-            {{ graphNodeData.name }}
+            {{ graphNode.name }}
         </div>
         <div class="io">
             <div class="inputs">
-                    <input-socket v-for="input in graphNodeData.inputs" :key="input.id" :socket-name="input.label" ref="sockets">
+                    <input-socket v-for="input in graphNode.inputs" :key="input.id" :socket-name="input.label" ref="sockets">
                     </input-socket>
             </div>
             <div class="outputs">
-                    <output-socket v-for="output in graphNodeData.outputs" :key="output.id" :socket-name="output.label" ref="sockets">
+                    <output-socket v-for="output in graphNode.outputs" :key="output.id" :socket-name="output.label" ref="sockets">
                     </output-socket>
             </div>
         </div>
@@ -29,6 +29,7 @@ import eventBus from "../EventBus.js"
 
 export default {
   name: "GraphNode",
+  props: ["graphNode"], 
   data() {
     return {
       socketRefs: [],
@@ -43,26 +44,7 @@ export default {
         left: "0",
         top: "0"
       },
-      graphNodeData: {
-        name: "grayscale",
-        inputs: [
-          {
-            id: 1,
-            label: "color"
-          },
-          {
-            id: 2,
-            label: "factor"
-          }
-        ],
-        outputs: [
-          {
-            id: 1,
-            label: "color"
-          }
-        ]
-      }
-    };
+    }
   },
   methods: {
     startMove(event) {

@@ -1,10 +1,6 @@
 <template>
   <div id="app">
     <node-editor></node-editor>
-    <graph-node></graph-node>
-    <graph-node></graph-node>
-    <graph-node></graph-node>
-    <graph-node></graph-node>
   </div>
 </template>
 
