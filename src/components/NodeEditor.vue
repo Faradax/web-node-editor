@@ -36,7 +36,17 @@ var graphModel = {
         }
       ]
     },
+    {
+      name: "passes",
+      inputs: [],
+      outputs: [
         {
+          label: "out",
+          type: "rgb"
+        }
+      ]
+    },
+    {
       name: "render",
       outputs: [],
       inputs: [
@@ -70,6 +80,10 @@ export default {
             " to " +
             inputSocket.socketName
         );
+        let existingConnection = this.graphModel.connections.find( (connection) => {
+          return connection.end == inputSocket
+        });
+        this.graphModel.connections = this.graphModel.connections.filter(item => item !== existingConnection);
         this.graphModel.connections.push({
           id: this.connectionsId++,
           start: this.connectionStart,
