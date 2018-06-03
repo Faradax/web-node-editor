@@ -21,11 +21,30 @@ describe('Graph', () => {
       }
     };
 
-    graph.connectSockets(stubOutputSocket, stubInputSocket);
-    expect(graph.connections.length).toBe(1)
-    expect(graph.connections[0].start).toBe(stubOutputSocket);
-    expect(graph.connections[0].end).toBe(stubInputSocket);
+    const connection = graph.connectSockets(stubOutputSocket, stubInputSocket);
+    expect(connection.start).toBe(stubOutputSocket);
+    expect(connection.end).toBe(stubInputSocket);
   })
+
+  it('can remove existing connections', () => {
+    // given a graph with a connection
+    const graph = new Graph();
+    const connection = graph.connectSockets({}, {});
+
+    graph.removeConnection(connection);
+    expect(graph.connections).not.toContain(connection);
+  });
+
+
+  it('only removes the desired connection', () => {
+    // given a graph with more than one connection
+    const graph = new Graph();
+    const firstConnection = graph.connectSockets({x: 14, y: 1}, {x: 0, y: 0});
+    const removalConnection = graph.connectSockets({}, {});
+
+    graph.removeConnection(removalConnection);
+    expect(graph.connections).toContain(firstConnection);
+  });
 })
 
 // also see example testing a component with mocks at

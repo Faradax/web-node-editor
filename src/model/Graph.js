@@ -9,10 +9,18 @@ export class Graph {
         this.connections = this.connections.filter(
             item => item !== existingConnection
         );
-        this.connections.push({
+        const connection = {
             id: this.connectionsId++,
             start: outputSocket,
             end: inputSocket
-        });
+        }
+        this.connections.push(connection);
+        return connection;
     };
+
+    removeConnection(connection) {
+        this.connections = this.connections.filter(it => {
+            return it !== connection;
+        });
+    }
 }
