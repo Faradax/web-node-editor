@@ -21,47 +21,13 @@ export default {
       anchor: {
         x: 0,
         y: 0
-      },
-      tempConnectionStyle: {
-        left: "0px",
-        top: "0px",
-        height: "0px",
-        width: "0px"
       }
     };
   },
   methods: {
     startDrag() {
       eventBus.$emit("connection", this);
-
-      document.onmousemove = this.drawConnection;
-      document.onmouseup = () => {
-        this.tempConnectionStyle = {
-          left: "0px",
-          top: "0px",
-          height: "0px",
-          width: "0px"
-        };
-        document.onmousemove = null;
-      };
     },
-
-    drawConnection() {
-      const bounds = this.$el
-        .querySelector(".input-mark")
-        .getBoundingClientRect();
-      let x = bounds.x;
-      let y = bounds.y;
-      x += bounds.width / 2;
-      y += bounds.height / 2;
-      this.tempConnectionStyle.left = bounds.width / 2 + "px";
-      this.tempConnectionStyle.top = bounds.height / 2 + "px";
-      let targetX = event.clientX;
-      let targetY = event.clientY;
-      this.tempConnectionStyle.width = targetX - x + "px";
-      this.tempConnectionStyle.height = targetY - y + "px";
-    },
-
     clientPosition() {
       const bounds = this.$el
         .querySelector(".input-mark")

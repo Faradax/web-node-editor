@@ -6,6 +6,7 @@
                 >
                 <connection v-for="connection in graphModel.connections" :key="connection.id"
                     :start="connection.start.anchor" :end="connection.end.anchor"/>
+                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd"></connection>
             </svg>
         </div>
         <div class="node-pane">
@@ -65,12 +66,30 @@ export default {
     return {
       graphModel: graphModel,
       connectionsId: 0,
-      connectionStart: null
+      connectionStart: null,
+      connectionEnd: null
     };
   },
   methods: {
-    startConnection(outputSocket) {
+    drawConnection(outputSocket) {
       this.connectionStart = outputSocket;
+      document.onmousemove = function() {
+        this.connectionEnd = {
+          x: event.clientX,
+          y: event.clientY
+        }
+      }.bind(this);
+      document.onmouseup = () => {
+        this.tempConnectionStyle = {
+          left: "0px",
+          top: "0px",
+          height: "0px",
+          width: "0px"
+        };
+        document.onmousemove = null;
+        this.connectionStart =null;
+        this.connectionEnd = null;
+      };
     },
     finishConnection(inputSocket) {
       if (this.connectionStart) {
@@ -80,10 +99,14 @@ export default {
             " to " +
             inputSocket.socketName
         );
-        let existingConnection = this.graphModel.connections.find( (connection) => {
-          return connection.end == inputSocket
-        });
-        this.graphModel.connections = this.graphModel.connections.filter(item => item !== existingConnection);
+        let existingConnection = this.graphModel.connections.find(
+          connection => {
+            return connection.end == inputSocket;
+          }
+        );
+        this.graphModel.connections = this.graphModel.connections.filter(
+          item => item !== existingConnection
+        );
         this.graphModel.connections.push({
           id: this.connectionsId++,
           start: this.connectionStart,
@@ -93,7 +116,7 @@ export default {
     }
   },
   mounted() {
-    eventBus.$on("connection", this.startConnection);
+    eventBus.$on("connection", this.drawConnection);
     eventBus.$on("connection-finish", this.finishConnection);
   },
   components: {
