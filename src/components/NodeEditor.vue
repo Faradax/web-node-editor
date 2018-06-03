@@ -58,7 +58,20 @@ var graphModel = {
       ]
     }
   ],
-  connections: []
+  connections: [],
+  connectSockets: function(outputSocket, inputSocket) {
+    let existingConnection = this.connections.find(connection => {
+      return connection.end == inputSocket;
+    });
+    this.connections = this.connections.filter(
+      item => item !== existingConnection
+    );
+    this.connections.push({
+      id: this.connectionsId++,
+      start: outputSocket,
+      end: inputSocket
+    });
+  }
 };
 
 export default {
@@ -77,7 +90,7 @@ export default {
         this.connectionEnd = {
           x: event.clientX,
           y: event.clientY
-        }
+        };
       }.bind(this);
       document.onmouseup = () => {
         this.tempConnectionStyle = {
@@ -87,31 +100,14 @@ export default {
           width: "0px"
         };
         document.onmousemove = null;
-        this.connectionStart =null;
+        this.connectionStart = null;
         this.connectionEnd = null;
       };
     },
     finishConnection(inputSocket) {
       if (this.connectionStart) {
-        console.log(
-          "connected " +
-            this.connectionStart.socketName +
-            " to " +
-            inputSocket.socketName
-        );
-        let existingConnection = this.graphModel.connections.find(
-          connection => {
-            return connection.end == inputSocket;
-          }
-        );
-        this.graphModel.connections = this.graphModel.connections.filter(
-          item => item !== existingConnection
-        );
-        this.graphModel.connections.push({
-          id: this.connectionsId++,
-          start: this.connectionStart,
-          end: inputSocket
-        });
+        this.graphModel.connectSockets(this.connectionStart, inputSocket);
+        this.connectionStart = null;
       }
     }
   },
