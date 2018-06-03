@@ -78,7 +78,20 @@ describe('Graph', () => {
     // graph is empty
     expect(graph.nodes.length).toBe(0);
   });
-})
 
-// also see example testing a component with mocks at
-// https://github.com/vuejs/vueify-example/blob/master/test/unit/a.spec.js#L22-L43
+  it('disconnects node upon removal', () => {
+    // given a graph with a connection
+    const graph = new Graph();
+    const stubOutput = { label: 'out'};
+    const stubInput = { label: 'in' };
+    const stubNode1 = { name: 'foo', inputs:[stubInput], outputs: []};
+    const stubNode2 = { name: 'foo', inputs: [], outputs: [stubOutput]};
+    graph.addNode(stubNode1);
+    graph.addNode(stubNode2);
+    graph.connectSockets(stubOutput, stubInput);
+
+    assert();
+  });
+
+  it('cannot add the same node twice', () => { assert(false); });
+});
