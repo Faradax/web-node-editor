@@ -1,5 +1,5 @@
 export class Graph {
-    rootNodes;
+    nodes = [];
     connections = new Array();
 
     connectSockets(outputSocket, inputSocket) {

@@ -23,57 +23,44 @@
 import eventBus from "../EventBus.js";
 import Connection from "./Connection.vue";
 import GraphNode from "./GraphNode.vue";
+import Graph from "../model/Graph.js";
 
 // TODO: Builder / Interface
-var graphModel = {
-  nodes: [
-    {
-      name: "sth",
-      inputs: [],
-      outputs: [
-        {
-          label: "color",
-          type: "rgb"
-        }
-      ]
-    },
-    {
-      name: "passes",
-      inputs: [],
-      outputs: [
-        {
-          label: "out",
-          type: "rgb"
-        }
-      ]
-    },
-    {
-      name: "render",
-      outputs: [],
-      inputs: [
-        {
-          label: "color",
-          type: "rgb"
-        }
-      ]
-    }
-  ],
-  connections: [],
-  connectSockets: function(outputSocket, inputSocket) {
-    let existingConnection = this.connections.find(connection => {
-      return connection.end == inputSocket;
-    });
-    this.connections = this.connections.filter(
-      item => item !== existingConnection
-    );
-    this.connections.push({
-      id: this.connectionsId++,
-      start: outputSocket,
-      end: inputSocket
-    });
+var graphModel = new Graph();
+graphModel.nodes = [
+  {
+    name: "sth",
+    inputs: [],
+    outputs: [
+      {
+        label: "color",
+        type: "rgb"
+      }
+    ]
+  },
+  {
+    name: "passes",
+    inputs: [],
+    outputs: [
+      {
+        label: "out",
+        type: "rgb"
+      }
+    ]
+  },
+  {
+    name: "render",
+    outputs: [],
+    inputs: [
+      {
+        label: "color",
+        type: "rgb"
+      }
+    ]
   }
-};
+];
 
+// TODO: Have preview connection state during drag, showing invalid / deleted connections?
 export default {
   data: function() {
     return {
