@@ -1,4 +1,4 @@
-export class Graph {
+export default class Graph {
     nodes = [];
     connections = new Array();
 
