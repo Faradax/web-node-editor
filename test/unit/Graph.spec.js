@@ -1,4 +1,4 @@
-import { Graph } from '../../src/model/Graph';
+import Graph from '../../src/model/Graph';
 
 describe('Graph', () => {
   it('should connect two sockets', () => {
@@ -82,10 +82,10 @@ describe('Graph', () => {
   it('disconnects node upon removal', () => {
     // given a graph with a connection
     const graph = new Graph();
-    const stubOutput = { label: 'out'};
+    const stubOutput = { label: 'out' };
     const stubInput = { label: 'in' };
-    const stubNode1 = { name: 'foo', inputs:[stubInput], outputs: []};
-    const stubNode2 = { name: 'foo', inputs: [], outputs: [stubOutput]};
+    const stubNode1 = { name: 'foo', inputs: [stubInput], outputs: [] };
+    const stubNode2 = { name: 'foo', inputs: [], outputs: [stubOutput] };
     graph.addNode(stubNode1);
     graph.addNode(stubNode2);
     graph.connectSockets(stubOutput, stubInput);
@@ -93,5 +93,18 @@ describe('Graph', () => {
     assert();
   });
 
-  it('cannot add the same node twice', () => { assert(false); });
+  it('cannot add the same node twice', () => {
+    // given graph and node
+    const graph = new Graph();
+    const node = {
+      name: "foo",
+      inputs: [],
+      outputs: []
+    };
+
+    graph.addNode(node);
+    graph.addNode(node);
+
+    expect(graph.nodes.length).toBe(1);
+  });
 });
