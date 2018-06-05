@@ -22,14 +22,14 @@
 </template>
 
 <script>
-
 import InputSocket from "./InputSocket.vue";
 import OutputSocket from "./OutputSocket.vue";
-import eventBus from "../EventBus.js"
+import eventBus from "../EventBus.js";
+import Vue from "vue";
 
 export default {
   name: "GraphNode",
-  props: ["graphNode"], 
+  props: ["graphNode"],
   data() {
     return {
       socketRefs: [],
@@ -43,8 +43,8 @@ export default {
       pos: {
         left: "0",
         top: "0"
-      },
-    }
+      }
+    };
   },
   methods: {
     startMove(event) {
@@ -66,15 +66,16 @@ export default {
       this.dragState.posY = event.clientY - this.dragState.startY;
       this.pos.left = this.dragState.posX + "px";
       this.pos.top = this.dragState.posY + "px";
-
-      this.$refs.sockets.forEach(element => {
-        element.recalculateAnchor();
+      Vue.nextTick(() => {
+        this.$refs.sockets.forEach(element => {
+          element.recalculateAnchor();
+        });
       });
     }
   },
   components: {
-   InputSocket,
-   OutputSocket
+    InputSocket,
+    OutputSocket
   }
 };
 </script>
@@ -123,7 +124,7 @@ export default {
   left: -14px;
 }
 .o {
-    right: -14px;
+  right: -14px;
 }
 
 .input-mark {
@@ -138,11 +139,11 @@ export default {
 }
 
 .i .input-mark {
-    margin-right: 6px;
+  margin-right: 6px;
 }
 
 .o .input-mark {
-    margin-left: 6px;
+  margin-left: 6px;
 }
 
 .i:hover .input-mark {
