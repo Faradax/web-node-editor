@@ -21,7 +21,43 @@ describe('Graph', () => {
     const connection = graph.connectSockets(stubOutputSocket, stubInputSocket);
     expect(connection.start).toBe(stubOutputSocket);
     expect(connection.end).toBe(stubInputSocket);
-  })
+  });
+
+  it('removes existing connections from input when connecting a new one', () => {
+    // given a graph with a connection between two sockets
+    const graph = new Graph();
+
+    const stubOutputSocket = {
+      handle: {
+        x: 1,
+        y: 2
+      }
+    };
+
+    const stubInputSocket = {
+      handle: {
+        x: 3,
+        y: 4
+      }
+    };
+
+    const firstConnection = graph.connectSockets(stubOutputSocket, stubInputSocket);
+
+    // and a second output socket
+    const stubOutputSocket2 = {
+      handle: {
+        x: 1,
+        y: 2
+      }
+    };
+
+    // when connecting the second socket to the input
+    const secondConnection = graph.connectSockets(stubOutputSocket2, stubInputSocket);
+
+    // only the connection from the second output remains
+    expect(graph.connections).toContain(secondConnection);
+    expect(graph.connections).not.toContain(firstConnection);
+  });
 
   it('can remove existing connections', () => {
     // given a graph with a connection
