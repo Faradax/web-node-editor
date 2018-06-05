@@ -3,9 +3,6 @@ import Graph from '../../src/model/Graph';
 describe('Graph', () => {
   it('should connect two sockets', () => {
     const graph = new Graph();
-    console.log(graph);
-    console.log(graph.connections);
-    console.log(graph.connections.find);
 
     const stubOutputSocket = {
       handle: {
