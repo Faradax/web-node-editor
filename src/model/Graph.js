@@ -7,9 +7,16 @@ export default class Graph {
     }
 
     removeNode(node) {
+        const sockets = node.inputs.concat(node.outputs);
+        const connectionsToRemove = this.connections.filter(it => {
+            return sockets.includes(it.start) || sockets.includes(it.end)
+        });
+
+        connectionsToRemove.forEach(it => this.removeConnection(it));
+
         this.nodes = this.nodes.filter(it => {
             return it !== node;
-        })
+        });
     }
 
     connectSockets(outputSocket, inputSocket) {

@@ -1,7 +1,7 @@
 import Graph from '../../src/model/Graph';
 
 describe('Graph', () => {
-  it('should connect two sockets', () => {
+  test('should connect two sockets', () => {
     const graph = new Graph();
 
     const stubOutputSocket = {
@@ -121,9 +121,10 @@ describe('Graph', () => {
     const stubNode2 = { name: 'foo', inputs: [], outputs: [stubOutput] };
     graph.addNode(stubNode1);
     graph.addNode(stubNode2);
-    graph.connectSockets(stubOutput, stubInput);
+    const connection = graph.connectSockets(stubOutput, stubInput);
 
-    assert();
+    graph.removeNode(stubNode2);
+    expect(graph.connections).not.toContain(connection);
   });
 
   it('cannot add the same node twice', () => {
