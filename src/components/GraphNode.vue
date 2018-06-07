@@ -21,63 +21,59 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import InputSocket from "./InputSocket.vue";
 import OutputSocket from "./OutputSocket.vue";
 import eventBus from "../EventBus.js";
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import Node from "../model/Node";
 
-export default {
-  name: "GraphNode",
-  props: ["graphNode"],
-  data() {
-    return {
-      socketRefs: [],
-      dragState: {
-        beingDragged: false,
-        startX: 0,
-        startY: 0,
-        posX: 0,
-        posY: 0
-      },
-      pos: {
-        left: "0",
-        top: "0"
-      }
-    };
-  },
-  methods: {
-    startMove(event) {
-      event = event || window.event;
-      // get the mouse cursor position at startup:
-      this.dragState.startX = event.clientX - this.dragState.posX;
-      this.dragState.startY = event.clientY - this.dragState.posY;
-      document.onmousemove = this.doMove;
-      this.dragState.beingDragged = true;
-      document.onmouseup = () => {
-        document.onmousemove = null;
-        this.dragState.beingDragged = false;
-      };
-    },
-
-    doMove(event) {
-      event = event || window.event;
-      this.dragState.posX = event.clientX - this.dragState.startX;
-      this.dragState.posY = event.clientY - this.dragState.startY;
-      this.pos.left = this.dragState.posX + "px";
-      this.pos.top = this.dragState.posY + "px";
-      Vue.nextTick(() => {
-        this.$refs.sockets.forEach(element => {
-          element.recalculateAnchor();
-        });
-      });
-    }
-  },
+@Component({
   components: {
-    InputSocket,
-    OutputSocket
+    InputSocket, OutputSocket
   }
-};
+})
+export default class GraphNode extends Vue {
+  @Prop() private graphNode!: Node;
+
+  private dragState = {
+    beingDragged: false,
+    startX: 0,
+    startY: 0,
+    posX: 0,
+    posY: 0
+  };
+  private pos = {
+    left: "0",
+    top: "0"
+  };
+
+  private startMove(event: any) {
+    event = event || window.event;
+    // get the mouse cursor position at startup:
+    this.dragState.startX = event.clientX - this.dragState.posX;
+    this.dragState.startY = event.clientY - this.dragState.posY;
+    document.onmousemove = this.doMove;
+    this.dragState.beingDragged = true;
+    document.onmouseup = () => {
+      document.onmousemove = null;
+      this.dragState.beingDragged = false;
+    };
+  }
+
+  private doMove(event: any) {
+    event = event || window.event;
+    this.dragState.posX = event.clientX - this.dragState.startX;
+    this.dragState.posY = event.clientY - this.dragState.startY;
+    this.pos.left = this.dragState.posX + "px";
+    this.pos.top = this.dragState.posY + "px";
+    Vue.nextTick(() => {
+      (this.$refs.sockets as any).forEach((element: any) => {
+        element.recalculateAnchor();
+      });
+    });
+  }
+}
 </script>
 
 <style>

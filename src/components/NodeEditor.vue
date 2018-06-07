@@ -6,11 +6,11 @@
                 >
                 <connection v-for="connection in graphModel.connections" :key="connection.id"
                     :start="connection.start.anchor" :end="connection.end.anchor"/>
-                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd"></connection>
+                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd.anchor"></connection>
             </svg>
         </div>
         <div class="node-pane">
-            <graph-node v-for="graphNode in graphModel.nodes"
+            <graph-node v-for="graphNode in nodes"
                 :graph-node="graphNode" 
                 :key="graphNode.name"
                 >
@@ -19,94 +19,88 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component, Prop } from "vue-property-decorator";
+
 import eventBus from "../EventBus.js";
+
 import Connection from "./Connection.vue";
 import GraphNode from "./GraphNode.vue";
-import Graph from "../model/Graph.js";
+import OutputSocket from "./OutputSocket.vue";
+import InputSocket from "./InputSocket.vue";
 
-// TODO: Builder / Interface
-var graphModel = new Graph();
-graphModel.nodes = [
-  {
-    name: "sth",
-    inputs: [],
-    outputs: [
-      {
-        label: "color",
-        type: "rgb"
-      }
-    ]
-  },
-  {
-    name: "passes",
-    inputs: [],
-    outputs: [
-      {
-        label: "out",
-        type: "rgb"
-      }
-    ]
-  },
-  {
-    name: "render",
-    outputs: [],
-    inputs: [
-      {
-        label: "color",
-        type: "rgb"
-      }
-    ]
-  }
-];
+import Graph from "../model/Graph";
+import Node from "../model/Node";
+import Socket from "../model/Socket";
 
-// TODO: Have preview connection state during drag, showing invalid / deleted connections?
-export default {
-  data: function() {
-    return {
-      graphModel: graphModel,
-      connectionsId: 0,
-      connectionStart: null,
-      connectionEnd: null
-    };
-  },
-  methods: {
-    drawConnection(outputSocket) {
-      this.connectionStart = outputSocket;
-      document.onmousemove = function() {
-        this.connectionEnd = {
-          x: event.clientX,
-          y: event.clientY
-        };
-      }.bind(this);
-      document.onmouseup = () => {
-        this.tempConnectionStyle = {
-          left: "0px",
-          top: "0px",
-          height: "0px",
-          width: "0px"
-        };
-        document.onmousemove = null;
-        this.connectionStart = null;
-        this.connectionEnd = null;
-      };
-    },
-    finishConnection(inputSocket) {
-      if (this.connectionStart) {
-        this.graphModel.connectSockets(this.connectionStart, inputSocket);
-        this.connectionStart = null;
-      }
-    }
-  },
-  mounted() {
-    eventBus.$on("connection", this.drawConnection);
-    eventBus.$on("connection-finish", this.finishConnection);
-  },
+@Component({
   components: {
     Connection,
-    GraphNode
+    GraphNode,
   }
-};
+})
+export default class NodeEditor extends Vue {
+  private graphModel: Graph = (() => {
+    const graph = new Graph();
+
+    const node = new Node("something");
+    node.inputs.push(new Socket("input"));
+    node.outputs.push(new Socket("output"));
+    graph.addNode(node);
+
+    const node2 = new Node("other");
+    node2.inputs.push(new Socket("input"));
+    node2.outputs.push(new Socket("output"));
+    graph.addNode(node2);
+    return graph;
+  })();
+  private tempConnectionStyle: any = {};
+  private connectionsId = 0;
+  private connectionStart: OutputSocket | null = null;
+  private connectionEnd: { anchor: { x?: number; y?: number } } | null = null;
+
+  get nodes() {
+    return [...this.graphModel.nodes];
+  }
+
+  public mounted() {
+    eventBus.$on("connection", this.startTempConnectionFrom);
+    eventBus.$on("connection-finish", this.finishConnection);
+  }
+
+  private startTempConnectionFrom(outputSocket: OutputSocket) {
+    this.connectionStart = outputSocket;
+    document.onmousemove = (event: MouseEvent) => {
+      if (!event) {
+        return;
+      }
+      this.connectionEnd = {
+        anchor: {
+          x: event.clientX,
+          y: event.clientY
+        }
+      };
+    };
+    document.onmouseup = (event: MouseEvent) => {
+      this.tempConnectionStyle = {
+        left: "0px",
+        top: "0px",
+        height: "0px",
+        width: "0px"
+      };
+      document.onmousemove = null;
+      // this.connectionStart = null;
+      // this.connectionEnd = null;
+    };
+  }
+
+  private finishConnection(inputSocket: InputSocket) {
+    if (this.connectionStart) {
+      // this.graphModel.connectSockets(this.connectionStart, inputSocket);
+      this.connectionStart = null;
+    }
+  }
+}
 </script>
 
 <style>

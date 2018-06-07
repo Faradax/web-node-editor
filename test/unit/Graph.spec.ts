@@ -1,22 +1,13 @@
 import Graph from '../../src/model/Graph';
+import Socket from '../../src/model/Socket';
+import Node from '../../src/model/Node';
 
 describe('Graph', () => {
   test('should connect two sockets', () => {
     const graph = new Graph();
 
-    const stubOutputSocket = {
-      handle: {
-        x: 1,
-        y: 2
-      }
-    };
-
-    const stubInputSocket = {
-      handle: {
-        x: 3,
-        y: 4
-      }
-    };
+    const stubOutputSocket = new Socket("out");
+    const stubInputSocket = new Socket("in");
 
     const connection = graph.connectSockets(stubOutputSocket, stubInputSocket);
     expect(connection.start).toBe(stubOutputSocket);
@@ -27,29 +18,13 @@ describe('Graph', () => {
     // given a graph with a connection between two sockets
     const graph = new Graph();
 
-    const stubOutputSocket = {
-      handle: {
-        x: 1,
-        y: 2
-      }
-    };
-
-    const stubInputSocket = {
-      handle: {
-        x: 3,
-        y: 4
-      }
-    };
+    const stubOutputSocket = new Socket("out");
+    const stubInputSocket = new Socket("in");
 
     const firstConnection = graph.connectSockets(stubOutputSocket, stubInputSocket);
 
     // and a second output socket
-    const stubOutputSocket2 = {
-      handle: {
-        x: 1,
-        y: 2
-      }
-    };
+    const stubOutputSocket2 = new Socket("out2");
 
     // when connecting the second socket to the input
     const secondConnection = graph.connectSockets(stubOutputSocket2, stubInputSocket);
@@ -62,7 +37,9 @@ describe('Graph', () => {
   it('can remove existing connections', () => {
     // given a graph with a connection
     const graph = new Graph();
-    const connection = graph.connectSockets({}, {});
+    const stubOutputSocket = new Socket("out");
+    const stubInputSocket = new Socket("in");
+    const connection = graph.connectSockets(stubOutputSocket, stubInputSocket);
 
     graph.removeConnection(connection);
     expect(graph.connections).not.toContain(connection);
@@ -72,8 +49,13 @@ describe('Graph', () => {
   it('only removes the desired connection', () => {
     // given a graph with more than one connection
     const graph = new Graph();
-    const firstConnection = graph.connectSockets({ x: 14, y: 1 }, { x: 0, y: 0 });
-    const removalConnection = graph.connectSockets({}, {});
+    const stubOutputSocket = new Socket("out");
+    const stubInputSocket = new Socket("in");
+    const firstConnection = graph.connectSockets(stubOutputSocket, stubInputSocket);
+    
+    const stubOutputSocket2 = new Socket("out2");
+    const stubInputSocket2 = new Socket("in2");
+    const removalConnection = graph.connectSockets(stubOutputSocket2, stubInputSocket2);
 
     graph.removeConnection(removalConnection);
     expect(graph.connections).toContain(firstConnection);
@@ -84,13 +66,10 @@ describe('Graph', () => {
     const graph = new Graph();
 
     // when adding an empty node
-    graph.addNode({
-      name: "foo",
-      inputs: [],
-      outputs: []
-    });
+    const node = new Node();
+    graph.addNode(node);
 
-    expect(graph.nodes[0].name).toBe('foo');
+    expect(graph.nodes).toContain(node);
   });
 
   it('can remove a node', () => {
@@ -109,7 +88,7 @@ describe('Graph', () => {
     graph.removeNode(node);
 
     // graph is empty
-    expect(graph.nodes.length).toBe(0);
+    expect(graph.nodes.size).toBe(0);
   });
 
   it('disconnects node upon removal', () => {
@@ -139,6 +118,6 @@ describe('Graph', () => {
     graph.addNode(node);
     graph.addNode(node);
 
-    expect(graph.nodes.length).toBe(1);
+    expect(graph.nodes.size).toBe(1);
   });
 });
