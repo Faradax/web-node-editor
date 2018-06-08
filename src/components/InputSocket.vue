@@ -1,22 +1,28 @@
 <template>
     <div class="i" @mouseup="mouseUp">
-        <span class="input-mark"></span> {{ socketName }}
+        <span class="input-mark"></span> {{ socket.label }}
     </div>
 </template>
 
 <script lang="ts">
 import eventBus from "../EventBus.js";
 
+import Socket from "../model/Socket";
+
 import { Component, Vue, Prop } from "vue-property-decorator";
 
-@Component({})
+@Component
 export default class InputSocket extends Vue {
   public readonly anchor: any = {
     x: 0,
     y: 0
   };
 
-  @Prop() private socketName!: string;
+  @Prop() private socket!: Socket;
+
+  public mounted() {
+    eventBus.$emit("socket-mounted", this.socket.id, this);
+  }
 
   public recalculateAnchor() {
     this.anchor.x = this.clientPosition().x;

@@ -10,11 +10,11 @@
         </div>
         <div class="io">
             <div class="inputs">
-                    <input-socket v-for="input in graphNode.inputs" :key="input.id" :socket-name="input.label" ref="sockets">
+                    <input-socket v-for="input in graphNode.inputs" :key="input.id" :socket="input" ref="sockets">
                     </input-socket>
             </div>
             <div class="outputs">
-                    <output-socket v-for="output in graphNode.outputs" :key="output.id" :socket-name="output.label" ref="sockets">
+                    <output-socket v-for="output in graphNode.outputs" :key="output.id" :socket="output" ref="sockets">
                     </output-socket>
             </div>
         </div>

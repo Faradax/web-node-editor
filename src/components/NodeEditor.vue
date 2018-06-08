@@ -5,8 +5,8 @@
                 preserveAspectRatio="none"
                 >
                 <connection v-for="connection in graphModel.connections" :key="connection.id"
-                    :start="connection.start.anchor" :end="connection.end.anchor"/>
-                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd.anchor"></connection>
+                    :start="componentForSocket(connection.start).anchor" :end="componentForSocket(connection.end).anchor"/>
+                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd.anchor" stroke-dasharray="5,5"></connection>
             </svg>
         </div>
         <div class="node-pane">
@@ -36,36 +36,67 @@ import Socket from "../model/Socket";
 @Component({
   components: {
     Connection,
-    GraphNode,
+    GraphNode
   }
 })
 export default class NodeEditor extends Vue {
+
   private graphModel: Graph = (() => {
     const graph = new Graph();
-
-    const node = new Node("something");
-    node.inputs.push(new Socket("input"));
-    node.outputs.push(new Socket("output"));
-    graph.addNode(node);
-
-    const node2 = new Node("other");
-    node2.inputs.push(new Socket("input"));
-    node2.outputs.push(new Socket("output"));
-    graph.addNode(node2);
+    graph.addNode(this.mockNode());
+    graph.addNode(this.mockNode());
+    graph.addNode(this.mockNode());
+    graph.addNode(this.mockNode());
     return graph;
   })();
   private tempConnectionStyle: any = {};
   private connectionsId = 0;
   private connectionStart: OutputSocket | null = null;
   private connectionEnd: { anchor: { x?: number; y?: number } } | null = null;
+  private socketMap: Map<number, InputSocket | OutputSocket> = new Map();
 
   get nodes() {
     return [...this.graphModel.nodes];
   }
 
-  public mounted() {
+  get sockets(): Socket[] {
+    let sockets: Socket[] = [];
+    [...this.graphModel.nodes].forEach(
+      it => (sockets = sockets.concat(it.inputs).concat(it.outputs))
+    );
+    return sockets;
+  }
+
+  private created() {
     eventBus.$on("connection", this.startTempConnectionFrom);
     eventBus.$on("connection-finish", this.finishConnection);
+
+    eventBus.$on("socket-mounted", this.registerSocketInMap);
+  }
+
+  private mockNode() {
+    const node = new Node("something");
+    node.inputs.push(new Socket("input"));
+    node.outputs.push(new Socket("output"));
+    return node;
+  }
+
+  private registerSocketInMap(
+    id: number,
+    component: InputSocket | OutputSocket
+  ) {
+    this.socketMap.set(id, component);
+  }
+
+  private socketForComponent(component: InputSocket | OutputSocket): Socket {
+    const socketId = [...this.socketMap].find(pair => {
+      return pair[1] === component;
+    })![0];
+    return this.sockets.find(it => it.id === socketId)!;
+  }
+
+  private componentForSocket(socket: Socket): InputSocket | OutputSocket {
+    return this.socketMap.get(socket.id)!;
   }
 
   private startTempConnectionFrom(outputSocket: OutputSocket) {
@@ -89,14 +120,17 @@ export default class NodeEditor extends Vue {
         width: "0px"
       };
       document.onmousemove = null;
-      // this.connectionStart = null;
-      // this.connectionEnd = null;
+      this.connectionStart = null;
+      this.connectionEnd = null;
     };
   }
 
   private finishConnection(inputSocket: InputSocket) {
     if (this.connectionStart) {
-      // this.graphModel.connectSockets(this.connectionStart, inputSocket);
+      const startSocket = this.socketForComponent(this.connectionStart);
+      const endSocket = this.socketForComponent(inputSocket);
+      console.log("connecting", startSocket, endSocket);
+      this.graphModel.connectSockets(startSocket, endSocket);
       this.connectionStart = null;
     }
   }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="o">
-            {{ socketName }} 
+            {{ socket.label }} 
             <span class="input-mark" style="position: relative" @mousedown="startDrag">
                 <div style="position: absolute" :style="tempConnectionStyle">
                 </div>
@@ -13,7 +13,10 @@
 <script lang="ts">
 import eventBus from "../EventBus.js";
 
+import Socket from "../model/Socket";
+
 import { Vue, Component, Prop } from "vue-property-decorator";
+
 @Component
 export default class OutputSocket extends Vue {
   public readonly anchor: any = {
@@ -21,7 +24,11 @@ export default class OutputSocket extends Vue {
     y: 0
   };
 
-  @Prop() private socketName!: string;
+  @Prop() private socket!: Socket;
+
+  public mounted() {
+    eventBus.$emit("socket-mounted", this.socket.id, this);
+  }
 
   public recalculateAnchor() {
     this.anchor.x = this.clientPosition().x;

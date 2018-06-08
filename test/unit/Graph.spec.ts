@@ -1,9 +1,9 @@
-import Graph from '../../src/model/Graph';
-import Socket from '../../src/model/Socket';
-import Node from '../../src/model/Node';
+import Graph from "../../src/model/Graph";
+import Socket from "../../src/model/Socket";
+import Node from "../../src/model/Node";
 
-describe('Graph', () => {
-  test('should connect two sockets', () => {
+describe("Graph", () => {
+  test("should connect two sockets", () => {
     const graph = new Graph();
 
     const stubOutputSocket = new Socket("out");
@@ -14,7 +14,7 @@ describe('Graph', () => {
     expect(connection.end).toBe(stubInputSocket);
   });
 
-  it('removes existing connections from input when connecting a new one', () => {
+  it("removes existing connections from input when connecting a new one", () => {
     // given a graph with a connection between two sockets
     const graph = new Graph();
 
@@ -34,7 +34,7 @@ describe('Graph', () => {
     expect(graph.connections).not.toContain(firstConnection);
   });
 
-  it('can remove existing connections', () => {
+  it("can remove existing connections", () => {
     // given a graph with a connection
     const graph = new Graph();
     const stubOutputSocket = new Socket("out");
@@ -45,14 +45,13 @@ describe('Graph', () => {
     expect(graph.connections).not.toContain(connection);
   });
 
-
-  it('only removes the desired connection', () => {
+  it("only removes the desired connection", () => {
     // given a graph with more than one connection
     const graph = new Graph();
     const stubOutputSocket = new Socket("out");
     const stubInputSocket = new Socket("in");
     const firstConnection = graph.connectSockets(stubOutputSocket, stubInputSocket);
-    
+
     const stubOutputSocket2 = new Socket("out2");
     const stubInputSocket2 = new Socket("in2");
     const removalConnection = graph.connectSockets(stubOutputSocket2, stubInputSocket2);
@@ -61,7 +60,7 @@ describe('Graph', () => {
     expect(graph.connections).toContain(firstConnection);
   });
 
-  it('can add a node', () => {
+  it("can add a node", () => {
     // given an empty graph
     const graph = new Graph();
 
@@ -72,7 +71,7 @@ describe('Graph', () => {
     expect(graph.nodes).toContain(node);
   });
 
-  it('can remove a node', () => {
+  it("can remove a node", () => {
     // given a graph with one node in it
     const graph = new Graph();
 
@@ -80,7 +79,7 @@ describe('Graph', () => {
       name: "foo",
       inputs: [],
       outputs: []
-    }
+    };
 
     graph.addNode(node);
 
@@ -91,13 +90,13 @@ describe('Graph', () => {
     expect(graph.nodes.size).toBe(0);
   });
 
-  it('disconnects node upon removal', () => {
+  it("disconnects node upon removal", () => {
     // given a graph with a connection
     const graph = new Graph();
-    const stubOutput = { label: 'out' };
-    const stubInput = { label: 'in' };
-    const stubNode1 = { name: 'foo', inputs: [stubInput], outputs: [] };
-    const stubNode2 = { name: 'foo', inputs: [], outputs: [stubOutput] };
+    const stubOutput = new Socket("out");
+    const stubInput = new Socket("in");
+    const stubNode1 = { name: "foo", inputs: [stubInput], outputs: [] };
+    const stubNode2 = { name: "foo", inputs: [], outputs: [stubOutput] };
     graph.addNode(stubNode1);
     graph.addNode(stubNode2);
     const connection = graph.connectSockets(stubOutput, stubInput);
@@ -106,7 +105,7 @@ describe('Graph', () => {
     expect(graph.connections).not.toContain(connection);
   });
 
-  it('cannot add the same node twice', () => {
+  it("cannot add the same node twice", () => {
     // given graph and node
     const graph = new Graph();
     const node = {
