@@ -18,6 +18,8 @@ export default class InputSocket extends Vue {
     y: 0
   };
 
+  public markedForDeletion: boolean = false;
+
   @Prop() private socket!: Socket;
 
   public mounted() {

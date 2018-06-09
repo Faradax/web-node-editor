@@ -87,7 +87,7 @@ describe("Graph", () => {
     graph.removeNode(node);
 
     // graph is empty
-    expect(graph.nodes.size).toBe(0);
+    expect(graph.nodes.length).toBe(0);
   });
 
   it("disconnects node upon removal", () => {
@@ -117,6 +117,6 @@ describe("Graph", () => {
     graph.addNode(node);
     graph.addNode(node);
 
-    expect(graph.nodes.size).toBe(1);
+    expect(graph.nodes.length).toBe(1);
   });
 });

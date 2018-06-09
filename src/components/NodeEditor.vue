@@ -5,8 +5,10 @@
                 preserveAspectRatio="none"
                 >
                 <connection v-for="connection in graphModel.connections" :key="connection.id"
-                    :start="componentForSocket(connection.start).anchor" :end="componentForSocket(connection.end).anchor"/>
-                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd.anchor" stroke-dasharray="5,5"></connection>
+                    :start="componentForSocket(connection.start).anchor" 
+                    :end="componentForSocket(connection.end).anchor" 
+                    :marked="componentForSocket(connection.end).markedForDeletion || componentForSocket(connection.start).markedForDeletion"/>
+                <connection v-if="connectionEnd" :start="connectionStart.anchor" :end="connectionEnd.anchor" :temp="true"></connection>
             </svg>
         </div>
         <div class="node-pane">
@@ -40,13 +42,12 @@ import Socket from "../model/Socket";
   }
 })
 export default class NodeEditor extends Vue {
-
   private graphModel: Graph = (() => {
     const graph = new Graph();
-    graph.addNode(this.mockNode());
-    graph.addNode(this.mockNode());
-    graph.addNode(this.mockNode());
-    graph.addNode(this.mockNode());
+    graph.addNode(this.mockNode("Test1"));
+    graph.addNode(this.mockNode("Test2"));
+    graph.addNode(this.mockNode("Test3"));
+    graph.addNode(this.mockNode("Test4"));
     return graph;
   })();
   private tempConnectionStyle: any = {};
@@ -56,7 +57,7 @@ export default class NodeEditor extends Vue {
   private socketMap: Map<number, InputSocket | OutputSocket> = new Map();
 
   get nodes() {
-    return [...this.graphModel.nodes];
+    return Array.from(this.graphModel.nodes);
   }
 
   get sockets(): Socket[] {
@@ -72,10 +73,14 @@ export default class NodeEditor extends Vue {
     eventBus.$on("connection-finish", this.finishConnection);
 
     eventBus.$on("socket-mounted", this.registerSocketInMap);
+    eventBus.$on(
+      "delete-node",
+      this.graphModel.removeNode.bind(this.graphModel)
+    );
   }
 
-  private mockNode() {
-    const node = new Node("something");
+  private mockNode(name: string) {
+    const node = new Node(name);
     node.inputs.push(new Socket("input"));
     node.outputs.push(new Socket("output"));
     return node;
@@ -129,7 +134,6 @@ export default class NodeEditor extends Vue {
     if (this.connectionStart) {
       const startSocket = this.socketForComponent(this.connectionStart);
       const endSocket = this.socketForComponent(inputSocket);
-      console.log("connecting", startSocket, endSocket);
       this.graphModel.connectSockets(startSocket, endSocket);
       this.connectionStart = null;
     }
@@ -140,12 +144,5 @@ export default class NodeEditor extends Vue {
 <style>
 svg {
   overflow: visible;
-}
-
-svg path {
-  fill: none;
-  stroke: #000000;
-  stroke-width: 3px;
-  stroke-linecap: round;
 }
 </style>

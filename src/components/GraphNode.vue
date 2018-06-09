@@ -1,13 +1,14 @@
 <template>
     <div 
         class="graph-node"
-        v-bind:style="pos"
-        v-bind:class="{dragged: dragState.beingDragged}">
+        :style="pos"
+        :class="{dragged: dragState.beingDragged}">
         <div 
             class="name"         
             @mousedown="startMove">
             {{ graphNode.name }}
         </div>
+        <div @dblclick="deleteNode" @mouseover="markDeletion" @mouseout="unmarkDeletion">[x]</div>
         <div class="io">
             <div class="inputs">
                     <input-socket v-for="input in graphNode.inputs" :key="input.id" :socket="input" ref="sockets">
@@ -47,6 +48,22 @@ export default class GraphNode extends Vue {
     left: "0",
     top: "0"
   };
+
+  private markDeletion() {
+     (this.$refs.sockets as any).forEach((element: any) => {
+        element.markedForDeletion = true;
+      });
+  }
+
+  private unmarkDeletion() {
+     (this.$refs.sockets as any).forEach((element: any) => {
+        element.markedForDeletion = false;
+      });
+  }
+
+  private deleteNode() {
+    eventBus.$emit("delete-node", this.graphNode);
+  }
 
   private startMove(event: any) {
     event = event || window.event;

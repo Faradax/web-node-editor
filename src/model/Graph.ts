@@ -3,13 +3,15 @@ import Node from "./Node";
 import Socket from "./Socket";
 
 export default class Graph {
-    public nodes = new Set<Node>();
+    public nodes: Node[] = [];
     public connections: Connection[] = [];
 
     private connectionsId = 0;
 
     public addNode(node: Node): void {
-        this.nodes.add(node);
+        if (!this.nodes.includes(node)) {
+            this.nodes.push(node);
+        }
     }
 
     public removeNode(node: Node): void {
@@ -20,7 +22,7 @@ export default class Graph {
 
         connectionsToRemove.forEach((it) => this.removeConnection(it));
 
-        this.nodes.delete(node);
+        this.nodes = this.nodes.filter(it => it !== node);
     }
 
     public connectSockets(outputSocket: Socket, inputSocket: Socket): Connection {
